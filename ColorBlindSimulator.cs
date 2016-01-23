@@ -1,6 +1,5 @@
 ﻿namespace BrettMStory.Unity.ColorBlind {
 
-    using System;
     using UnityEditor;
     using UnityEngine;
 
