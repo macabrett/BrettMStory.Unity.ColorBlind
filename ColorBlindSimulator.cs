@@ -24,15 +24,31 @@
     public class ColorBlindSimulator : MonoBehaviour {
 
         /// <summary>
-        /// The selected color blind type.
-        /// </summary>
-        [SerializeField]
-        public int SelectedColorBlindType;
-
-        /// <summary>
         /// The various materials that can be used.
         /// </summary>
         private readonly Material[] _materials = new Material[8];
+
+        /// <summary>
+        /// The selected color blind type.
+        /// </summary>
+        [SerializeField]
+        private int _selectedColorBlindType;
+
+        /// <summary>
+        /// Gets or sets the type of the selected color blind.
+        /// </summary>
+        /// <value>
+        /// The type of the selected color blind.
+        /// </value>
+        public ColorBlindType SelectedColorBlindType {
+            get {
+                return (ColorBlindType)this._selectedColorBlindType;
+            }
+
+            set {
+                this._selectedColorBlindType = (int)value;
+            }
+        }
 
         /// <summary>
         /// Awakes this instance.
@@ -54,11 +70,11 @@
         /// <param name="source">The source.</param>
         /// <param name="destination">The destination.</param>
         private void OnRenderImage(RenderTexture source, RenderTexture destination) {
-            if ((ColorBlindType)this.SelectedColorBlindType == ColorBlindType.Normal) {
+            if ((ColorBlindType)this._selectedColorBlindType == ColorBlindType.Normal) {
                 return;
             }
 
-            Graphics.Blit(source, destination, this._materials[this.SelectedColorBlindType - 1]);
+            Graphics.Blit(source, destination, this._materials[this._selectedColorBlindType - 1]);
         }
     }
 
@@ -88,7 +104,7 @@
         /// </summary>
         public override void OnInspectorGUI() {
             serializedObject.Update();
-            var colorBlindType = serializedObject.FindProperty("SelectedColorBlindType");
+            var colorBlindType = serializedObject.FindProperty("_selectedColorBlindType");
             colorBlindType.intValue = EditorGUILayout.Popup("Color Blind Type", colorBlindType.intValue, this._choices);
             serializedObject.ApplyModifiedProperties();
         }
