@@ -7,15 +7,15 @@
     /// Various types of color blindness.
     /// </summary>
     public enum ColorBlindType {
-        Normal = -1,
-        Protanopia = 0,
-        Protanomaly = 1,
-        Deuteranopia = 2,
-        Deuteranomaly = 3,
-        Tritanopia = 4,
-        Tritanomaly = 5,
-        Monochromacy = 6,
-        BlueCone = 7
+        Normal = 0,
+        Protanopia = 1,
+        Protanomaly = 2,
+        Deuteranopia = 3,
+        Deuteranomaly = 4,
+        Tritanopia = 5,
+        Tritanomaly = 6,
+        Monochromacy = 7,
+        BlueCone = 8
     }
 
     /// <summary>
@@ -24,30 +24,15 @@
     public class ColorBlindSimulator : MonoBehaviour {
 
         /// <summary>
+        /// The selected color blind type.
+        /// </summary>
+        [SerializeField]
+        public int SelectedColorBlindType;
+
+        /// <summary>
         /// The various materials that can be used.
         /// </summary>
         private readonly Material[] _materials = new Material[8];
-
-        /// <summary>
-        /// The selected color blind type.
-        /// </summary>
-        private ColorBlindType _selectedColorBlindType = ColorBlindType.Normal;
-
-        /// <summary>
-        /// Gets or sets the type of the selected color blind.
-        /// </summary>
-        /// <value>
-        /// The type of the selected color blind.
-        /// </value>
-        public ColorBlindType SelectedColorBlindType {
-            get {
-                return this._selectedColorBlindType;
-            }
-
-            set {
-                this._selectedColorBlindType = value;
-            }
-        }
 
         /// <summary>
         /// Awakes this instance.
@@ -69,11 +54,11 @@
         /// <param name="source">The source.</param>
         /// <param name="destination">The destination.</param>
         private void OnRenderImage(RenderTexture source, RenderTexture destination) {
-            if (this.SelectedColorBlindType == ColorBlindType.Normal) {
+            if ((ColorBlindType)this.SelectedColorBlindType == ColorBlindType.Normal) {
                 return;
             }
 
-            Graphics.Blit(source, destination, this._materials[(int)this._selectedColorBlindType]);
+            Graphics.Blit(source, destination, this._materials[this.SelectedColorBlindType - 1]);
         }
     }
 
@@ -99,19 +84,13 @@
         };
 
         /// <summary>
-        /// The current index selected from the drop down menu.
-        /// </summary>
-        private int _currentIndex = 0;
-
-        /// <summary>
         /// Called when [inspector GUI].
         /// </summary>
         public override void OnInspectorGUI() {
-            this.DrawDefaultInspector();
-            this._currentIndex = EditorGUILayout.Popup(this._currentIndex, this._choices);
-            var colorBlindSimulator = this.target as ColorBlindSimulator;
-            colorBlindSimulator.SelectedColorBlindType = (ColorBlindType)(this._currentIndex - 1);
-            EditorUtility.SetDirty(target);
+            serializedObject.Update();
+            var colorBlindType = serializedObject.FindProperty("SelectedColorBlindType");
+            colorBlindType.intValue = EditorGUILayout.Popup("Color Blind Type", colorBlindType.intValue, this._choices);
+            serializedObject.ApplyModifiedProperties();
         }
     }
 }
